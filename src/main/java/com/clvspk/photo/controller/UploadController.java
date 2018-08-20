@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,21 +29,20 @@ public class UploadController {
         if (multipartFiles == null || multipartFiles.length <= 0) {
             Result.fail("请求参数异常");
         }
+        List<String> list = new ArrayList<>();
         //图片基础路径
         String basePath = getImgPath();
         for (MultipartFile multipartFile : multipartFiles) {
-            String picName = uuidName();
-            //todo
-            InputStream inputStream = multipartFile.getInputStream();
-            FileOutputStream fileOutputStream = new FileOutputStream("");
-            byte[] b = new byte[1024];
-            while ((inputStream.read(b)) != -1) {
-                fileOutputStream.write(b);
-            }
-            inputStream.close();
-            fileOutputStream.close();
+            String picName =
+                    UUID.randomUUID().toString().replace("-", "")
+                            + multipartFile.getOriginalFilename().substring(
+                            multipartFile.getOriginalFilename().lastIndexOf("."),
+                            multipartFile.getOriginalFilename().length()
+                    );
+            File file = new File(basePath + File.separator + picName);
+            multipartFile.transferTo(file);
+            list.add(getHttpUrl(file.getPath()));
         }
-        List<String> list = new ArrayList<>();
         return list;
     }
 
@@ -55,6 +52,9 @@ public class UploadController {
         String day = String.valueOf(LocalDateTime.now().getDayOfMonth());
         if (month.length() < 2) {
             month = "0" + month;
+        }
+        if (month.length() < 2) {
+            day = "0" + day;
         }
         File file = new File(
                 config.getBasePath()
@@ -71,7 +71,8 @@ public class UploadController {
         return file.getPath();
     }
 
-    private static String uuidName(){
-        return UUID.randomUUID().toString().replace("-","");
+    private String getHttpUrl(String filePath) {
+        return config.getLocalhost() + filePath.replace(config.getBasePath(), "").replace("\\", "/");
     }
+
 }
