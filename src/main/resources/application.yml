@@ -1,0 +1,16 @@
+server:
+  port: 8085
+  context-path: /api
+spring:
+  http:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+imgConfig:
+
+  #图片域名
+  localhost: http://pic.clvspk.com
+
+  #服务器存储路径
+  basePath: home:img-server:img
