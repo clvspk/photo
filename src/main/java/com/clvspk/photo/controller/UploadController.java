@@ -2,6 +2,7 @@ package com.clvspk.photo.controller;
 
 import com.clvspk.photo.config.Config;
 import com.clvspk.photo.response.Result;
+import com.clvspk.photo.utils.IpAddr;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,7 +58,7 @@ public class UploadController {
             }else {
                 System.out.println(
                         String.format("Ip: %s , FileError: %s , Time: %s",
-                                request.getRemoteAddr(),
+                                IpAddr.getIpAddr(request),
                                 multipartFile.getOriginalFilename(),
                                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
             }
