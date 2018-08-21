@@ -91,14 +91,17 @@ public class UploadController {
                     }
                 }
                 this.basePath = file.getPath();
-                this.overTime = Date.from(LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0).atZone(ZoneId.systemDefault()).toInstant()).getTime();
+                this.overTime = Date.from(LocalDateTime.now().plusDays(1)
+                        .withHour(0).withMinute(0).withSecond(0).withNano(0)
+                        .atZone(ZoneId.systemDefault()).toInstant()).getTime();
             }
         }
         return this.basePath;
     }
 
     private String getHttpUrl(String filePath) {
-        return config.getLocalhost() + filePath.replace(config.getBasePath(), "").replace("\\", "/");
+        return config.getLocalhost()
+                + filePath.replace(config.getBasePath(), "").replace("\\", "/");
     }
 
     private boolean isImg(InputStream inputStream) {
