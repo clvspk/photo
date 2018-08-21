@@ -1,7 +1,7 @@
 package com.clvspk.photo.exception;
 
 /**
- * 业务异常
+ * Business Exception
  * Created on 2017/8/22/022.
  *
  * @author MrC

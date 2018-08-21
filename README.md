@@ -5,10 +5,10 @@
 
 # imgConfig:
 
-# 图片域名
+# Http Url
   localhost: http://pic.clvspk.com/
 
-# 服务器存储路径
+# Server Storage
   basePath: home:photo:img
 
 #nginx

@@ -1,8 +1,9 @@
 package com.clvspk.photo.controller;
 
-import com.clvspk.photo.config.Config;
 import com.clvspk.photo.response.Result;
-import com.clvspk.photo.utils.IpAddr;
+import com.clvspk.photo.utils.Assert;
+import com.clvspk.photo.utils.PhotoLog;
+import com.clvspk.photo.utils.PhotoUtils;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,126 +12,62 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("upload")
 public class UploadController {
 
     @Autowired
-    private Config config;
-
-    private String basePath = null;
-
-    private Long overTime = null;
+    private PhotoUtils photoUtils;
 
 
+    /**
+     * Upload Photo
+     */
     @PostMapping
     public List<String> upload(@RequestParam("imgFile") MultipartFile[] multipartFiles, HttpServletRequest request) throws IOException {
-        if (multipartFiles == null || multipartFiles.length <= 0) {
+        if (Assert.isNull(multipartFiles)) {
             Result.fail("Request Params Error");
         }
+
+        // Result List
         List<String> list = new ArrayList<>();
-        String basePath = getBasePath();
-        //图片基础路径
+
+        //Photo Server Storage Path
+        String basePath = photoUtils.getBasePath();
+
         for (MultipartFile multipartFile : multipartFiles) {
-            if (isImg(multipartFile.getInputStream())) {
-                String picName =
-                        UUID.randomUUID().toString().replace("-", "")
-                                + multipartFile.getOriginalFilename().substring(
-                                multipartFile.getOriginalFilename().lastIndexOf("."),
-                                multipartFile.getOriginalFilename().length()
-                        );
+
+            //is Photo
+            if (PhotoUtils.isPhoto(multipartFile.getInputStream())) {
+
+                // Create UUID Photo Name
+                String picName = PhotoUtils.getPhotoName(multipartFile);
+
+                //Create Photo File
                 File file = new File(basePath + File.separator + picName);
                 multipartFile.transferTo(file);
-                String httpUrl = getHttpUrl(file.getPath());
+
+                //Create Http Addr
+                String httpUrl = photoUtils.getHttpUrl(file.getPath());
                 list.add(httpUrl);
-                System.out.println(
-                        String.format("Success Ip: %s , SourceFileName: %s , HttpUrl: %s , Time: %s",
-                                IpAddr.getIpAddr(request),
-                                multipartFile.getOriginalFilename(),
-                                httpUrl,
-                                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+
+                //Insert Log
+                PhotoLog.success(request, multipartFile.getOriginalFilename(), httpUrl);
             } else {
-                System.out.println(
-                        String.format("Error Ip: %s , FileError: %s , Time: %s",
-                                IpAddr.getIpAddr(request),
-                                multipartFile.getOriginalFilename(),
-                                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+
+                //is not Photo
                 list.add("");
+
+                //Insert Log
+                PhotoLog.error(request, multipartFile.getOriginalFilename());
             }
         }
         return list;
-    }
-
-
-
-    /**
-     * 获取图片服务器基础路径
-     */
-    private String getBasePath() {
-        if (this.overTime == null || System.currentTimeMillis() > this.overTime) {
-            synchronized (this) {
-                String year = String.valueOf(LocalDateTime.now().getYear());
-                String month = String.valueOf(LocalDateTime.now().getMonth().getValue());
-                String day = String.valueOf(LocalDateTime.now().getDayOfMonth());
-                if (month.length() < 2) {
-                    month = "0" + month;
-                }
-                if (month.length() < 2) {
-                    day = "0" + day;
-                }
-                File file = new File(
-                        config.getBasePath()
-                                + year + File.separator
-                                + month + File.separator
-                                + day);
-                if (!file.exists()) {
-                    boolean createFileSuccess = file.mkdirs();
-                    if (!createFileSuccess) {
-                        Result.fail("File Dir Create Error");
-                        System.out.println("File Dir Create Error :" + file.getPath());
-                    }
-                }
-                this.basePath = file.getPath();
-                this.overTime = Date.from(LocalDateTime.now().plusDays(1)
-                        .withHour(0).withMinute(0).withSecond(0).withNano(0)
-                        .atZone(ZoneId.systemDefault()).toInstant()).getTime();
-            }
-        }
-        return this.basePath;
-    }
-
-    /**
-     * 拼接 http 地址
-     */
-    private String getHttpUrl(String filePath) {
-        return config.getLocalhost()
-                + filePath.replace(config.getBasePath(), "").replace("\\", "/");
-    }
-
-
-    /**
-     * 判断是否是图片
-     */
-    private boolean isImg(InputStream inputStream) {
-        try {
-            Image image = ImageIO.read(inputStream);
-            return image != null;
-        } catch (IOException ex) {
-            return false;
-        }
     }
 
 

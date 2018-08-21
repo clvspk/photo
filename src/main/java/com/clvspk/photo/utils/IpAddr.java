@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 public class IpAddr {
 
     /**
-     * 获取IP 如nginx代理 请注意ng配置
+     * Get IP  With Nginx
      */
     public static String getIpAddr(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");

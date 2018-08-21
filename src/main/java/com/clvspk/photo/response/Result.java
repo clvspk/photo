@@ -3,7 +3,7 @@ package com.clvspk.photo.response;
 import com.clvspk.photo.exception.BusinessException;
 
 /**
- * 响应实体
+ * Response
  *
  * @author Mr.C
  * @date 2018-6-26 10.00

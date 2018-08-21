@@ -1,7 +1,7 @@
 package com.clvspk.photo.response;
 
 /**
- * 响应标识
+ * Response Identification
  *
  * @author Mr.C
  * @date 2018-6-26 10:00

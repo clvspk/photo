@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 /**
- * 响应封装
+ * Response Qualify
  *
  * @author Mr.C
  * @date 2018-6-26 11.36

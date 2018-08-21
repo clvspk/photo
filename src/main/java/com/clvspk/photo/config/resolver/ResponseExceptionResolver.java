@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 import java.io.Writer;
 
 /**
- * 异常响应
+ * Exception Qualify
  *
  * @author Mr.C
  * @date 2018-6-26 11:00
