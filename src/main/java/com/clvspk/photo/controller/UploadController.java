@@ -39,13 +39,13 @@ public class UploadController {
     @PostMapping
     public List<String> upload(@RequestParam("imgFile") MultipartFile[] multipartFiles, HttpServletRequest request) throws IOException {
         if (multipartFiles == null || multipartFiles.length <= 0) {
-            Result.fail("请求参数异常");
+            Result.fail("Request Params Error");
         }
         List<String> list = new ArrayList<>();
         String basePath = getBasePath();
         //图片基础路径
         for (MultipartFile multipartFile : multipartFiles) {
-            if (isImg(multipartFile.getInputStream())){
+            if (isImg(multipartFile.getInputStream())) {
                 String picName =
                         UUID.randomUUID().toString().replace("-", "")
                                 + multipartFile.getOriginalFilename().substring(
@@ -55,7 +55,7 @@ public class UploadController {
                 File file = new File(basePath + File.separator + picName);
                 multipartFile.transferTo(file);
                 list.add(getHttpUrl(file.getPath()));
-            }else {
+            } else {
                 System.out.println(
                         String.format("Ip: %s , FileError: %s , Time: %s",
                                 IpAddr.getIpAddr(request),
@@ -86,8 +86,8 @@ public class UploadController {
                 if (!file.exists()) {
                     boolean createFileSuccess = file.mkdirs();
                     if (!createFileSuccess) {
-                        Result.fail("文件目录创建失败");
-                        System.out.println(file.getPath());
+                        Result.fail("File Dir Create Error");
+                        System.out.println("File Dir Create Error :" + file.getPath());
                     }
                 }
                 this.basePath = file.getPath();
@@ -101,11 +101,11 @@ public class UploadController {
         return config.getLocalhost() + filePath.replace(config.getBasePath(), "").replace("\\", "/");
     }
 
-    private boolean isImg(InputStream inputStream){
+    private boolean isImg(InputStream inputStream) {
         try {
             Image image = ImageIO.read(inputStream);
             return image != null;
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             return false;
         }
     }
