@@ -36,7 +36,7 @@ public class UploadController {
             Result.fail("请求参数异常");
         }
         List<String> list = new ArrayList<>();
-        String basePath  = getBasePath();
+        String basePath = getBasePath();
         //图片基础路径
         for (MultipartFile multipartFile : multipartFiles) {
             String picName =
@@ -53,8 +53,8 @@ public class UploadController {
     }
 
     private String getBasePath() {
-        if (this.overTime == null || System.currentTimeMillis() > this.overTime){
-            synchronized (this){
+        if (this.overTime == null || System.currentTimeMillis() > this.overTime) {
+            synchronized (this) {
                 String year = String.valueOf(LocalDateTime.now().getYear());
                 String month = String.valueOf(LocalDateTime.now().getMonth().getValue());
                 String day = String.valueOf(LocalDateTime.now().getDayOfMonth());
