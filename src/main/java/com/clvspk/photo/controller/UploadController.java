@@ -2,6 +2,7 @@ package com.clvspk.photo.controller;
 
 import com.clvspk.photo.config.Config;
 import com.clvspk.photo.response.Result;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,10 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +36,7 @@ public class UploadController {
 
 
     @PostMapping
-    public List<String> upload(@RequestParam("imgFile") MultipartFile[] multipartFiles) throws IOException {
+    public List<String> upload(@RequestParam("imgFile") MultipartFile[] multipartFiles, HttpServletRequest request) throws IOException {
         if (multipartFiles == null || multipartFiles.length <= 0) {
             Result.fail("请求参数异常");
         }
@@ -39,15 +44,23 @@ public class UploadController {
         String basePath = getBasePath();
         //图片基础路径
         for (MultipartFile multipartFile : multipartFiles) {
-            String picName =
-                    UUID.randomUUID().toString().replace("-", "")
-                            + multipartFile.getOriginalFilename().substring(
-                            multipartFile.getOriginalFilename().lastIndexOf("."),
-                            multipartFile.getOriginalFilename().length()
-                    );
-            File file = new File(basePath + File.separator + picName);
-            multipartFile.transferTo(file);
-            list.add(getHttpUrl(file.getPath()));
+            if (isImg(multipartFile.getInputStream())){
+                String picName =
+                        UUID.randomUUID().toString().replace("-", "")
+                                + multipartFile.getOriginalFilename().substring(
+                                multipartFile.getOriginalFilename().lastIndexOf("."),
+                                multipartFile.getOriginalFilename().length()
+                        );
+                File file = new File(basePath + File.separator + picName);
+                multipartFile.transferTo(file);
+                list.add(getHttpUrl(file.getPath()));
+            }else {
+                System.out.println(
+                        String.format("Ip: %s , FileError: %s , Time: %s",
+                                request.getRemoteAddr(),
+                                multipartFile.getOriginalFilename(),
+                                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+            }
         }
         return list;
     }
@@ -85,6 +98,15 @@ public class UploadController {
 
     private String getHttpUrl(String filePath) {
         return config.getLocalhost() + filePath.replace(config.getBasePath(), "").replace("\\", "/");
+    }
+
+    private boolean isImg(InputStream inputStream){
+        try {
+            Image image = ImageIO.read(inputStream);
+            return image != null;
+        } catch(IOException ex) {
+            return false;
+        }
     }
 
 
