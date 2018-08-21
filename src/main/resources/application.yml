@@ -10,7 +10,7 @@ spring:
 imgConfig:
 
   #Http Url
-  localhost: http://pic.clvspk.com/
+  localhost: http://pic.clvspk.com
 
   #Server Storage
   basePath: home:photo:img

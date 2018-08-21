@@ -69,7 +69,7 @@ public class PhotoUtils {
      * Splice http Url
      */
     public String getHttpUrl(String filePath) {
-        return config.getLocalhost()
+        return config.getLocalhost() +"/"
                 + filePath.replace(config.getBasePath(), "").replace("\\", "/");
     }
 
