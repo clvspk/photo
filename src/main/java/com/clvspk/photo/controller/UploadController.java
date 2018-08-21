@@ -54,13 +54,21 @@ public class UploadController {
                         );
                 File file = new File(basePath + File.separator + picName);
                 multipartFile.transferTo(file);
-                list.add(getHttpUrl(file.getPath()));
+                String httpUrl = getHttpUrl(file.getPath());
+                list.add(httpUrl);
+                System.out.println(
+                        String.format("Success Ip: %s , SourceFileName: %s , HttpUrl: %s , Time: %s",
+                                IpAddr.getIpAddr(request),
+                                multipartFile.getOriginalFilename(),
+                                httpUrl,
+                                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
             } else {
                 System.out.println(
-                        String.format("Ip: %s , FileError: %s , Time: %s",
+                        String.format("Error Ip: %s , FileError: %s , Time: %s",
                                 IpAddr.getIpAddr(request),
                                 multipartFile.getOriginalFilename(),
                                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+                list.add("");
             }
         }
         return list;
