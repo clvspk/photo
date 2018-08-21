@@ -1,9 +1,5 @@
 # Photo
-图片服务
 
-
-
-# imgConfig:
 
 # Http Url
   localhost: http://pic.clvspk.com/
