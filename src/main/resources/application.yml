@@ -13,4 +13,4 @@ imgConfig:
   localhost: http://pic.clvspk.com/
 
   #服务器存储路径
-  basePath: home:img-server:img
+  basePath: home:photo:img
