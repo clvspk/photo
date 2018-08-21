@@ -74,6 +74,11 @@ public class UploadController {
         return list;
     }
 
+
+
+    /**
+     * 获取图片服务器基础路径
+     */
     private String getBasePath() {
         if (this.overTime == null || System.currentTimeMillis() > this.overTime) {
             synchronized (this) {
@@ -107,11 +112,18 @@ public class UploadController {
         return this.basePath;
     }
 
+    /**
+     * 拼接 http 地址
+     */
     private String getHttpUrl(String filePath) {
         return config.getLocalhost()
                 + filePath.replace(config.getBasePath(), "").replace("\\", "/");
     }
 
+
+    /**
+     * 判断是否是图片
+     */
     private boolean isImg(InputStream inputStream) {
         try {
             Image image = ImageIO.read(inputStream);
